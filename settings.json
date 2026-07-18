@@ -45,5 +45,6 @@
   },
   "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true,
-  "theme": "custom:night-owl"
+  "theme": "custom:night-owl",
+  "autoMemoryEnabled": false
 }
