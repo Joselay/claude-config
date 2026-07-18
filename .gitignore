@@ -1,0 +1,31 @@
+# ~/.claude IS this repo's working tree. Everything is tracked EXCEPT the
+# machine-local / regenerable / secret paths listed below. When in doubt, add it here.
+.credentials.json
+*.credentials.json
+.config.json
+settings.local.json
+*.bak-*
+history.jsonl
+projects/
+sessions/
+session-env/
+shell-snapshots/
+cache/
+paste-cache/
+downloads/
+file-history/
+tasks/
+jobs/
+daemon/
+daemon.log
+backups/
+plans/
+telemetry/
+statsig/
+todos/
+.last-cleanup
+.last-update-result.json
+# Installed plugin payloads are large & regenerable; we keep only the marketplace list.
+plugins/marketplaces/
+plugins/repos/
+plugins/plugin-catalog-cache.json

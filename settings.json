@@ -1,0 +1,49 @@
+{
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "deny": [
+      "EnterPlanMode",
+      "ExitPlanMode",
+      "DesignSync",
+      "NotebookEdit",
+      "SendMessage",
+      "PushNotification",
+      "RemoteTrigger",
+      "ReportFindings",
+      "ScheduleWakeup",
+      "AskUserQuestion",
+      "CronCreate",
+      "CronDelete",
+      "CronList"
+    ]
+  },
+  "model": "claude-fable-5[1m]",
+  "disableClaudeAiConnectors": true,
+  "disableBundledSkills": true,
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/opt/homebrew/bin/bash \"$HOME/.claude/hooks/notify.sh\"",
+            "timeout": 10,
+            "statusMessage": "notify: playing sound…"
+          }
+        ]
+      }
+    ]
+  },
+  "disableRemoteControl": true,
+  "disableWorkflows": true,
+  "disableArtifact": true,
+  "statusLine": {
+    "type": "command",
+    "command": "/opt/homebrew/bin/bash \"$HOME/.claude/statusline/statusline.sh\"",
+    "padding": 0,
+    "refreshInterval": 5
+  },
+  "effortLevel": "high",
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "custom:night-owl"
+}
