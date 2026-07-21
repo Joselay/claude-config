@@ -44,7 +44,12 @@
     "refreshInterval": 5
   },
   "effortLevel": "high",
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
+  "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
   "theme": "custom:night-owl",
-  "autoMemoryEnabled": false
+  "voiceEnabled": true
 }
