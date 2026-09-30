@@ -1,0 +1,20 @@
+# Track only config you edit yourself; ignore everything Claude Code generates.
+/*
+
+!/.gitignore
+!/settings.json
+!/CLAUDE.md
+!/keybindings.json
+!/statusline*.sh
+!/sounds/
+!/agents/
+!/commands/
+!/hooks/
+!/output-styles/
+!/skills/
+
+# Skills synced from claude.ai (and ones removed when sync is turned off) are managed automatically
+/skills/synced/
+/skills/.trash/
+
+.DS_Store
