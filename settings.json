@@ -23,6 +23,7 @@
       "CronList"
     ]
   },
+  "model": "opus",
   "disableClaudeAiConnectors": true,
   "disableBundledSkills": true,
   "hooks": {
@@ -74,7 +75,13 @@
       "effortLevel": "high"
     }
   },
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
-  "theme": "dark"
+  "theme": "dark",
+  "switchModelsOnFlag": true,
+  "voiceEnabled": true
 }
