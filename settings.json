@@ -82,6 +82,7 @@
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark",
+  "outputStyle": "Concise",
   "switchModelsOnFlag": true,
   "voiceEnabled": true
 }
