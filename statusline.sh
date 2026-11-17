@@ -28,16 +28,17 @@ SEP="${DIM} • ${RESET}"
 # in any of these values, so splitting is safe. Numbers are finished in jq:
 # percentages round down so 100% only appears when a limit is truly hit,
 # and every field tolerates null so one missing value can't blank the line. ---
-IFS=$'\x1f' read -r current_dir model effort ctx_left five_used five_reset seven_used seven_reset <<< "$(
+IFS=$'\x1f' read -r current_dir model effort ctx_size ctx_left five_used five_reset seven_used seven_reset <<< "$(
   printf '%s' "$input" | jq -r '[
     (.workspace.current_dir // .workspace.project_dir // ""),
     (.model.display_name // "?"),
     (.effort.level // ""),
+    (.context_window.context_window_size // ""),
     (.context_window as $c
-     | if $c.context_window_size == null then ""
-       elif $c.current_usage == null and ($c.total_input_tokens // 0) == 0 then $c.context_window_size
-       elif $c.current_usage == null then ""
-       else [$c.context_window_size - ($c.total_input_tokens // 0), 0] | max end),
+     | if $c.context_window_size == null or $c.current_usage == null then ""
+       else [$c.context_window_size - (($c.current_usage.input_tokens // 0)
+                                      + ($c.current_usage.cache_creation_input_tokens // 0)
+                                      + ($c.current_usage.cache_read_input_tokens // 0)), 0] | max end),
     (.rate_limits.five_hour.used_percentage // "" | if type == "number" then floor else . end),
     (.rate_limits.five_hour.resets_at // "" | if type == "number" then floor else . end),
     (.rate_limits.seven_day.used_percentage // "" | if type == "number" then floor else . end),
@@ -66,26 +67,24 @@ if [ -n "$effort" ]; then
   model="${model} (${effort})"
 fi
 
-# --- Context window remaining in tokens. Empty before the first API response and
-# right after /compact (current_usage is null then), so show "--" instead of a
-# misleading full window. total_input_tokens already includes cache reads/writes,
-# matching how Claude Code computes used_percentage. ---
-if [ -n "$ctx_left" ]; then
-  if [ "$ctx_left" -ge 1000000 ]; then
-    ctx_m=$(( ctx_left / 1000000 ))
-    ctx_d=$(( ctx_left % 1000000 / 100000 ))
-    if [ "$ctx_d" -eq 0 ]; then
-      ctx_str="Context ${ctx_m}M left"
-    else
-      ctx_str="Context ${ctx_m}.${ctx_d}M left"
-    fi
-  elif [ "$ctx_left" -ge 1000 ]; then
-    ctx_str="Context $(( ctx_left / 1000 ))k left"
+fmt_tokens() {
+  local n="$1"
+  if [ "$n" -ge 1000000 ]; then
+    local m=$(( n / 1000000 )) d=$(( n % 1000000 / 100000 ))
+    if [ "$d" -eq 0 ]; then printf '%sM' "$m"; else printf '%s.%sM' "$m" "$d"; fi
+  elif [ "$n" -ge 1000 ]; then
+    printf '%sk' "$(( n / 1000 ))"
   else
-    ctx_str="Context ${ctx_left} left"
+    printf '%s' "$n"
   fi
+}
+
+if [ -n "$ctx_left" ]; then
+  ctx_str="Context $(fmt_tokens "$ctx_left") left"
+elif [ -n "$ctx_size" ]; then
+  ctx_str="Context $(fmt_tokens "$ctx_size")"
 else
-  ctx_str="Context --k left"
+  ctx_str=""
 fi
 
 # --- Rate-limit cache. rate_limits only arrive after the first API response, so
@@ -144,8 +143,8 @@ segments=("${BLUE}${dir_str}${RESET}")
 [ -n "$branch_str" ] && segments+=("${ORANGE}${branch_str}${RESET}")
 segments+=(
   "${MAGENTA}${model}${RESET}"
-  "${TEAL}${ctx_str}${RESET}"
 )
+[ -n "$ctx_str" ] && segments+=("${TEAL}${ctx_str}${RESET}")
 segments+=(
   "${GREEN}$(fmt_window "Session" "$five_used")${RESET}"
   "${PINK}$(fmt_window "Weekly" "$seven_used")${RESET}"
