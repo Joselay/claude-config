@@ -34,7 +34,9 @@ IFS=$'\x1f' read -r current_dir model effort ctx_left five_used five_reset seven
     (.model.display_name // "?"),
     (.effort.level // ""),
     (.context_window as $c
-     | if $c.current_usage == null or $c.context_window_size == null then ""
+     | if $c.context_window_size == null then ""
+       elif $c.current_usage == null and ($c.total_input_tokens // 0) == 0 then $c.context_window_size
+       elif $c.current_usage == null then ""
        else [$c.context_window_size - ($c.total_input_tokens // 0), 0] | max end),
     (.rate_limits.five_hour.used_percentage // "" | if type == "number" then floor else . end),
     (.rate_limits.five_hour.resets_at // "" | if type == "number" then floor else . end),
@@ -69,7 +71,15 @@ fi
 # misleading full window. total_input_tokens already includes cache reads/writes,
 # matching how Claude Code computes used_percentage. ---
 if [ -n "$ctx_left" ]; then
-  if [ "$ctx_left" -ge 1000 ]; then
+  if [ "$ctx_left" -ge 1000000 ]; then
+    ctx_m=$(( ctx_left / 1000000 ))
+    ctx_d=$(( ctx_left % 1000000 / 100000 ))
+    if [ "$ctx_d" -eq 0 ]; then
+      ctx_str="Context ${ctx_m}M left"
+    else
+      ctx_str="Context ${ctx_m}.${ctx_d}M left"
+    fi
+  elif [ "$ctx_left" -ge 1000 ]; then
     ctx_str="Context $(( ctx_left / 1000 ))k left"
   else
     ctx_str="Context ${ctx_left} left"
