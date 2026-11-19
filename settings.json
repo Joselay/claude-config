@@ -81,7 +81,7 @@
   },
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
-  "theme": "dark",
+  "theme": "custom:nightowl",
   "outputStyle": "Concise",
   "switchModelsOnFlag": true,
   "voiceEnabled": true
